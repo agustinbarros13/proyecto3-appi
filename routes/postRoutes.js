@@ -8,14 +8,11 @@ const {
 } = require('../controllers/postController');
 const router = express.Router();
 
-router.post('/posts', createPost);
-
-router.get('/posts', getAllPosts);
-
-router.get('/posts/:id', getPostById);
-
-router.put('/posts/:id', updatePost);
-
-router.delete('/posts/:id', deletePost);
+router.post('/', createPost);
+router.get('/', getAllPosts);
+router.get('/:id', getPostById);
+router.put('/:id', updatePost);
+router.delete('/:id', deletePost);
 
 module.exports = router;
+

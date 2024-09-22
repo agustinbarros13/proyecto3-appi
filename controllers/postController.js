@@ -13,14 +13,14 @@ exports.createPost = async (req, res) => {
     const post = new Post({
       title,
       content,
-      img: result?.secure_url || null, 
+      img: result?.secure_url || null,
       author,
     });
 
     await post.save();
     res.status(201).json(post);
   } catch (error) {
-    res.status(500).json({ message: 'Error al crear el post', error });
+    res.status(500).json({ message: 'Error al crear el post', error: error.message });
   }
 };
 
@@ -29,7 +29,7 @@ exports.getAllPosts = async (req, res) => {
     const posts = await Post.find().populate('author');
     res.status(200).json(posts);
   } catch (error) {
-    res.status(500).json({ message: 'Error al obtener los posts', error });
+    res.status(500).json({ message: 'Error al obtener los posts', error: error.message });
   }
 };
 
@@ -41,7 +41,7 @@ exports.getPostById = async (req, res) => {
     }
     res.status(200).json(post);
   } catch (error) {
-    res.status(500).json({ message: 'Error al obtener el post', error });
+    res.status(500).json({ message: 'Error al obtener el post', error: error.message });
   }
 };
 
@@ -69,7 +69,7 @@ exports.updatePost = async (req, res) => {
     await post.save();
     res.status(200).json(post);
   } catch (error) {
-    res.status(500).json({ message: 'Error al actualizar el post', error });
+    res.status(500).json({ message: 'Error al actualizar el post', error: error.message });
   }
 };
 
@@ -88,6 +88,6 @@ exports.deletePost = async (req, res) => {
     await post.remove();
     res.status(200).json({ message: 'Post eliminado' });
   } catch (error) {
-    res.status(500).json({ message: 'Error al eliminar el post', error });
+    res.status(500).json({ message: 'Error al eliminar el post', error: error.message });
   }
 };

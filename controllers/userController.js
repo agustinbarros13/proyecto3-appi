@@ -1,7 +1,6 @@
 const User = require('../models/User');
 const cloudinary = require('../middlewares/cloudinary');
 
-// Crear un usuario
 exports.createUser = async (req, res) => {
   try {
     const { name, img } = req.body;
@@ -19,21 +18,19 @@ exports.createUser = async (req, res) => {
     await user.save();
     res.status(201).json(user);
   } catch (error) {
-    res.status(500).json({ message: 'Error al crear el usuario', error });
+    res.status(500).json({ message: 'Error al crear el usuario', error: error.message });
   }
 };
 
-// Obtener todos los usuarios
 exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.find();
     res.status(200).json(users);
   } catch (error) {
-    res.status(500).json({ message: 'Error al obtener los usuarios', error });
+    res.status(500).json({ message: 'Error al obtener los usuarios', error: error.message });
   }
 };
 
-// Obtener usuario por ID
 exports.getUserById = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -42,11 +39,10 @@ exports.getUserById = async (req, res) => {
     }
     res.status(200).json(user);
   } catch (error) {
-    res.status(500).json({ message: 'Error al obtener el usuario', error });
+    res.status(500).json({ message: 'Error al obtener el usuario', error: error.message });
   }
 };
 
-// Actualizar un usuario
 exports.updateUser = async (req, res) => {
   try {
     const { name, img } = req.body;
@@ -70,11 +66,10 @@ exports.updateUser = async (req, res) => {
     await user.save();
     res.status(200).json(user);
   } catch (error) {
-    res.status(500).json({ message: 'Error al actualizar el usuario', error });
+    res.status(500).json({ message: 'Error al actualizar el usuario', error: error.message });
   }
 };
 
-// Eliminar un usuario
 exports.deleteUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -90,7 +85,6 @@ exports.deleteUser = async (req, res) => {
     await user.remove();
     res.status(200).json({ message: 'Usuario eliminado' });
   } catch (error) {
-    res.status(500).json({ message: 'Error al eliminar el usuario', error });
+    res.status(500).json({ message: 'Error al eliminar el usuario', error: error.message });
   }
 };
-
