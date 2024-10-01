@@ -3,16 +3,14 @@ const cloudinary = require('../middlewares/cloudinary');
 
 exports.createUser = async (req, res) => {
   try {
-    const { name, img } = req.body;
-
-    let result;
-    if (img) {
-      result = await cloudinary.uploader.upload(img, { folder: 'users' });
-    }
+    const { name } = req.body;
+    
+    // Obtener URL 
+    const img = req.file ? req.file.path : null;
 
     const user = new User({
       name,
-      img: result?.secure_url || null,
+      img,
     });
 
     await user.save();
@@ -22,43 +20,19 @@ exports.createUser = async (req, res) => {
   }
 };
 
-exports.getAllUsers = async (req, res) => {
-  try {
-    const users = await User.find();
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(500).json({ message: 'Error al obtener los usuarios', error: error.message });
-  }
-};
-
-exports.getUserById = async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id);
-    if (!user) {
-      return res.status(404).json({ message: 'Usuario no encontrado' });
-    }
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(500).json({ message: 'Error al obtener el usuario', error: error.message });
-  }
-};
-
 exports.updateUser = async (req, res) => {
   try {
-    const { name, img } = req.body;
+    const { name } = req.body;
 
     const user = await User.findById(req.params.id);
     if (!user) {
       return res.status(404).json({ message: 'Usuario no encontrado' });
     }
 
-    if (img) {
-      if (user.img) {
-        const public_id = user.img.split('/').pop().split('.')[0];
-        await cloudinary.uploader.destroy(`users/${public_id}`);
-      }
-      const result = await cloudinary.uploader.upload(img, { folder: 'users' });
-      user.img = result.secure_url;
+    if (req.file && user.img) {
+      const public_id = user.img.split('/').pop().split('.')[0];
+      await cloudinary.uploader.destroy(`users/${public_id}`);
+      user.img = req.file.path; // nueva imagen
     }
 
     user.name = name || user.name;
@@ -67,24 +41,5 @@ exports.updateUser = async (req, res) => {
     res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ message: 'Error al actualizar el usuario', error: error.message });
-  }
-};
-
-exports.deleteUser = async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id);
-    if (!user) {
-      return res.status(404).json({ message: 'Usuario no encontrado' });
-    }
-
-    if (user.img) {
-      const public_id = user.img.split('/').pop().split('.')[0];
-      await cloudinary.uploader.destroy(`users/${public_id}`);
-    }
-
-    await user.remove();
-    res.status(200).json({ message: 'Usuario eliminado' });
-  } catch (error) {
-    res.status(500).json({ message: 'Error al eliminar el usuario', error: error.message });
   }
 };
